@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubernetes.io/config.hash: 35250beff83d9aaf4fbd8e74914b8ee6
+    kubernetes.io/config.mirror: 35250beff83d9aaf4fbd8e74914b8ee6
+    kubernetes.io/config.seen: 2016-11-14T16:58:15.960536458+01:00
+    kubernetes.io/config.source: file
+  creationTimestamp: 2016-11-14T15:59:48Z
+  labels:
+    component: kube-apiserver
+    tier: control-plane
+  name: kube-apiserver-dockertest
+  namespace: kube-system
+  resourceVersion: "191437"
+  selfLink: /api/v1/namespaces/kube-system/pods/kube-apiserver-dockertest
+  uid: 5e640d19-aa83-11e6-ac67-5254004c28ef
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - --v=2
+    - --insecure-bind-address=127.0.0.1
+    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ResourceQuota
+    - --service-cluster-ip-range=10.96.0.0/12
+    - --service-account-key-file=/etc/kubernetes/pki/apiserver-key.pem
+    - --client-ca-file=/etc/kubernetes/pki/ca.pem
+    - --tls-cert-file=/etc/kubernetes/pki/apiserver.pem
+    - --tls-private-key-file=/etc/kubernetes/pki/apiserver-key.pem
+    - --token-auth-file=/etc/kubernetes/pki/tokens.csv
+    - --secure-port=6443
+    - --allow-privileged
+    - --advertise-address=192.168.1.167
+    - --etcd-servers=http://127.0.0.1:2379
+    - --service-node-port-range='79-32767'
+    image: gcr.io/google_containers/kube-apiserver-amd64:v1.4.4
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 15
+    name: kube-apiserver
+    resources:
+      requests:
+        cpu: 250m
+    terminationMessagePath: /dev/termination-log
+    volumeMounts:
+    - mountPath: /etc/ssl/certs
+      name: certs
+    - mountPath: /etc/kubernetes/
+      name: pki
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  hostNetwork: true
+  nodeName: dockertest
+  restartPolicy: Always
+  securityContext: {}
+  terminationGracePeriodSeconds: 30
+  volumes:
+  - hostPath:
+      path: /etc/ssl/certs
+    name: certs
+  - hostPath:
+      path: /etc/kubernetes
+    name: pki
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: 2016-11-16T16:12:53Z
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: 2016-11-16T16:13:14Z
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: 2016-11-16T16:12:53Z
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://d410b7fafdb1090c43e54989cbc2d468d257e121837f7809bcb603a5e796802e
+    image: gcr.io/google_containers/kube-apiserver-amd64:v1.4.4
+    imageID: docker://sha256:e8885a250f8cf95d9e50293f5259a933de0d61e17203d38a18bd6638f8eba06f
+    lastState:
+      terminated:
+        containerID: docker://6bca01d37555fe29141f77b86c797404814052579dc3695941d42ff90f9f2758
+        exitCode: 0
+        finishedAt: 2016-11-16T16:12:12Z
+        reason: Completed
+        startedAt: 2016-11-14T15:58:28Z
+    name: kube-apiserver
+    ready: true
+    restartCount: 1
+    state:
+      running:
+        startedAt: 2016-11-16T16:13:13Z
+  hostIP: 192.168.1.167
+  phase: Running
+  podIP: 192.168.1.167
+  startTime: 2016-11-16T16:12:53Z

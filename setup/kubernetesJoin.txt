@@ -1,0 +1,1 @@
+kubeadm join --token=029fdf.9a2016d3ac853537 192.168.1.167

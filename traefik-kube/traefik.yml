@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: traefik-deployment
+  namespace: kube-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      containers:
+      - name: traefik
+        image: lowet84/traefik-kube
+        ports:
+        - containerPort: 80
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    name: "ui"
+    nodePort: 30800
+  - port: 80
+    name: "web"
+    nodePort: 30080
+  selector: 
+    app: traefik
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: traefik-web-ui
+  namespace: kube-system
+spec:
+  rules:
+  - host: traefik.test
+    http:
+      paths:
+      - backend:
+          serviceName: traefik
+          servicePort: 8080

@@ -1,0 +1,4 @@
+[web]
+address = ":8080"
+
+[Kubernetes]
