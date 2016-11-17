@@ -27,7 +27,7 @@ spec:
   ports:
   - port: 8080
     name: "ui"
-    nodePort: 30800
+#    nodePort: 30800
   - port: 80
     name: "web"
     nodePort: 30080
