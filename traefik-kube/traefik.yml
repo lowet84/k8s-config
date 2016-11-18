@@ -12,10 +12,13 @@ spec:
     spec:
       containers:
       - name: traefik
-        image: lowet84/traefik-kube
+        image: traefik
         ports:
         - containerPort: 80
         - containerPort: 8080
+        args:
+        - --web
+        - --kubernetes
 ---
 apiVersion: v1
 kind: Service
