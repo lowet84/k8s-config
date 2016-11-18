@@ -1,2 +1,2 @@
 # K8S Config
-Configuration for Kubernetes cluster on bare metal.
+Configuration for Kubernetes cluster on bare metal
