@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: traefik
-        image: traefik
+        image: containous/traefik:k8s
         ports:
         - containerPort: 80
         - containerPort: 8080
