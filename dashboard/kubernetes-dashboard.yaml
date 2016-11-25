@@ -85,7 +85,7 @@ metadata:
   namespace: kube-system
 spec:
   rules:
-  - host: kubernetes.test
+  - host: kubernetes.kube
     http:
       paths:
       - backend:
