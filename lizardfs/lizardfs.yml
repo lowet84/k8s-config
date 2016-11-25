@@ -1,0 +1,26 @@
+kind: DaemonSet
+metadata:
+  name: lizardfs-master
+  namespace: lizardfs
+spec:
+  template:
+    metadata:
+      labels:
+        app: lizardfs-master
+    spec:
+      containers:
+      - name: lizardfs-master
+        image: lowet84/lizardfs-master
+        ports:
+        - containerPort: 9419
+        - containerPort: 9420
+        - containerPort: 9421
+        volumeMounts:
+        - mountPath: /var/lib/mfs
+          name: lizardfs-volume
+      volumes:
+      - name: lizardfs-volume
+        hostPath:
+          path: /var/lib/lizardfs
+      nodeSelector:
+        kubeadm.alpha.kubernetes.io/role: master
