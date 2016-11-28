@@ -30,35 +30,35 @@ spec:
           path: /var/lib/lizardfs
       nodeSelector:
         kubeadm.alpha.kubernetes.io/role: master
----
-apiVersion: extensions/v1beta1
-kind: DaemonSet
-metadata:
-  name: lizardfs-chunk
-  namespace: lizardfs
-spec:
-  template:
-    metadata:
-      labels:
-        app: lizardfs-chunk
-    spec:
-      containers:
-      - name: lizardfs-chunk
-        image: lowet84/lizardfs-chunk
-        ports:
-        - containerPort: 9422
-        volumeMounts:
-        - mountPath: /mnt
-          name: lizardfs-data-volume
-        env:
-        - name: MFSMASTER
-          value: lizardfs-master.lizardfs.svc.cluster.local
-      volumes:
-      - name: lizardfs-data-volume
-        hostPath:
-          path: /lizardfs-data
-      nodeSelector:
-        lizardfs: storage
+#---
+#apiVersion: extensions/v1beta1
+#kind: DaemonSet
+#metadata:
+#  name: lizardfs-chunk
+#  namespace: lizardfs
+#spec:
+#  template:
+#    metadata:
+#      labels:
+#        app: lizardfs-chunk
+#    spec:
+#      containers:
+#      - name: lizardfs-chunk
+#        image: lowet84/lizardfs-chunk
+#        ports:
+#        - containerPort: 9422
+#        volumeMounts:
+#        - mountPath: /mnt
+#          name: lizardfs-data-volume
+#        env:
+#        - name: MFSMASTER
+#          value: lizardfs-master.lizardfs.svc.cluster.local
+#      volumes:
+#      - name: lizardfs-data-volume
+#        hostPath:
+#          path: /lizardfs-data
+#      nodeSelector:
+#        lizardfs: storage
 ---
 apiVersion: v1
 kind: Service
