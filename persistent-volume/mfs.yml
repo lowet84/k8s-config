@@ -10,7 +10,7 @@ spec:
   accessModes:
     - ReadWriteMany
   flexVolume:
-    driver: "lizardfs"
+    driver: "lowet84/lizardfs"
     options:
       host: "localhost"
       port: "30421" 
