@@ -1,0 +1,100 @@
+#!/bin/bash
+
+usage() {
+	err "Invalid usage. Usage: "
+	err "\t$0 init"
+	err "\t$0 attach <json params>"
+	err "\t$0 detach <mount device>"
+	err "\t$0 mount <mount dir> <mount device> <json params>"
+	err "\t$0 unmount <mount dir>"
+	exit 1
+}
+
+err() {
+	echo -ne $* 1>&2 '\n'
+}
+
+log() {
+	echo -ne $* >&1
+}
+
+detach() {
+	log "{\"status\": \"Success\"}"
+	exit 0
+}
+
+ismounted() {
+	MOUNT=`findmnt -n ${MNTPATH} 2>/dev/null | cut -d' ' -f1`
+	if [ "${MOUNT}" == "${MNTPATH}" ]; then
+		echo "1"
+	else
+		echo "0"
+	fi
+}
+
+unmount() {
+	MNTPATH=$1
+	if [ $(ismounted) -eq 0 ] ; then
+		log "{\"status\": \"Success\"}"
+		exit 0
+	fi
+
+	umount ${MNTPATH} &> /dev/null
+	if [ $? -ne 0 ]; then
+		err "{ \"status\": \"Failed\", \"message\": \"Failed to unmount volume at ${MNTPATH}\"}"
+		exit 1
+	fi
+	rmdir ${MNTPATH} &> /dev/null
+
+	log "{\"status\": \"Success\"}"
+	exit 0
+}
+
+attach() {
+	VOLUMEID=$(echo $1 | jq -r '.volumeID')
+	SIZE=$(echo $1 | jq -r '.size')
+	VG=$(echo $1|jq -r '.volumegroup')
+
+	VOLUMEID=`echo $VOLUMEID|sed s/-/--/g`
+	VG=`echo $VG|sed s/-/--/g`
+
+	DMDEV="/dev/mapper/${VG}-${VOLUMEID}"
+	if [ ! -b "${DMDEV}" ]; then
+		err "{\"status\": \"Failure\", \"message\": \"Volume ${VOLUMEID} does not exist\"}"
+		exit 1
+	fi
+	log "{\"status\": \"Success\", \"device\":\"${DMDEV}\"}"
+	exit 0
+}
+
+op=$1
+
+if [ "$op" = "init" ]; then
+	log "{\"status\": \"Success\"}"
+	exit 0
+fi
+
+if [ $# -lt 2 ]; then
+	usage
+fi
+
+shift
+
+case "$op" in
+	attach)
+		attach $*
+		;;
+	detach)
+		detach $*
+		;;
+	mount)
+		domount $*
+		;;
+	unmount)
+		unmount $*
+		;;
+	*)
+		usage
+esac
+
+exit 1

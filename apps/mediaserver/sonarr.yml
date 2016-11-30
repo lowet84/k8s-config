@@ -47,7 +47,7 @@ metadata:
   namespace: mediaserver
 spec:
   rules:
-  - host: sonarr.test
+  - host: sonarr.kube
     http:
       paths:
       - backend:
