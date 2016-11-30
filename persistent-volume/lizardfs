@@ -70,8 +70,8 @@ domount() {
 
 	mkdir -p ${MNTPATH} &> /dev/null
 
-	HOST=$(cut $DMDEV -d':' -f1)
-	PORT=$(cut $DMDEV -d':' -f2)
+	HOST=$(echo $DMDEV | cut -d':' -f1)
+	PORT=$(echo $DMDEV | cut -d':' -f2)
 	mfsmount -H $HOST -P $PORT -o enablefilelocks=0 $MNTPATH &> /dev/null
 
 	if [ $? -ne 0 ]; then

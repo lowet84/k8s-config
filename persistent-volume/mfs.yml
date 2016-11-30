@@ -9,6 +9,9 @@ spec:
     storage: 8Gi
   accessModes:
     - ReadWriteMany
-  hostPath:
-    path: "/mfs/"
+  flexVolume:
+    driver: "lizardfs"
+    options:
+      host: "localhost"
+      port: "30421" 
   persistentVolumeReclaimPolicy: Recycle
