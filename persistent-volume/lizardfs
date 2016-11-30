@@ -51,19 +51,34 @@ unmount() {
 }
 
 attach() {
-	VOLUMEID=$(echo $1 | jq -r '.volumeID')
-	SIZE=$(echo $1 | jq -r '.size')
-	VG=$(echo $1|jq -r '.volumegroup')
+	HOST=$(echo $1 | jq -r '.host')
+	PORT=$(echo $1 | jq -r '.port')
+	DMDEV="$HOST:$PORT"
+	log "{\"status\": \"Success\", \"device\":\"${DMDEV}\"}"
+	exit 0
+}
 
-	VOLUMEID=`echo $VOLUMEID|sed s/-/--/g`
-	VG=`echo $VG|sed s/-/--/g`
+domount() {
+	MNTPATH=$1
+	DMDEV=$2
+	FSTYPE=$(echo $3|jq -r '.["kubernetes.io/fsType"]')
 
-	DMDEV="/dev/mapper/${VG}-${VOLUMEID}"
-	if [ ! -b "${DMDEV}" ]; then
-		err "{\"status\": \"Failure\", \"message\": \"Volume ${VOLUMEID} does not exist\"}"
+	if [ $(ismounted) -eq 1 ] ; then
+		log "{\"status\": \"Success\"}"
+		exit 0
+	fi
+
+	mkdir -p ${MNTPATH} &> /dev/null
+
+	HOST=$(cut $DMDEV -d':' -f1)
+	PORT=$(cut $DMDEV -d':' -f2)
+	mfsmount -H $HOST -P $PORT -o enablefilelocks=0 $MNTPATH &> /dev/null
+
+	if [ $? -ne 0 ]; then
+		err "{ \"status\": \"Failure\", \"message\": \"Failed to mount lizardfs ${DMDEV} at ${MNTPATH}\"}"
 		exit 1
 	fi
-	log "{\"status\": \"Success\", \"device\":\"${DMDEV}\"}"
+	log "{\"status\": \"Success\"}"
 	exit 0
 }
 
