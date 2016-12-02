@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd /data
+tar -czvf etcd.tar.gz data
+mv etcd.tar.g
