@@ -1,5 +1,27 @@
-#!/bin/bash
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: etcd-backup
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app: etcd-backup
+    spec:
+      containers:
+      - name: etcd-backup
+        image: lowet84/etcd-backup
+        volumeMounts:
+        - mountPath: /var/etcd
+          name: etcd-volume
+        env:
+        - name: SLEEP
+          value: "30s"
+      volumes:
+      - name: etcd-volume
+        hostPath:
+          path: /var/lib/etcd
+      nodeSelector:
+        kubeadm.alpha.kubernetes.io/role: master
 
-cd /data
-tar -czvf etcd.tar.gz data
-mv etcd.tar.g
