@@ -14,4 +14,4 @@ spec:
     options:
       host: "localhost"
       port: "30421" 
-  persistentVolumeReclaimPolicy: Recycle
+  persistentVolumeReclaimPolicy: Retain
