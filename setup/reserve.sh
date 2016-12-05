@@ -3,3 +3,4 @@
 NODE=$1
 
 kubectl taint nodes $NODE dedicated=reserve:NoSchedule
+kubectl label nodes $NODE role=reserve

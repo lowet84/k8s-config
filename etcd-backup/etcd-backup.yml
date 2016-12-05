@@ -48,3 +48,30 @@ spec:
   - port: 80
   selector: 
     app: etcd-backup
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: etcd-backup-restore
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app: etcd-backup-restore
+    spec:
+      containers:
+      - name: etcd-backup-restore
+        image: lowet84/etcd-backup-restore
+        volumeMounts:
+        - mountPath: /backup
+          name: backup-output
+        env:
+        - name: SLEEP
+          value: "5s"
+      volumes:
+      - name: backup-output
+        hostPath:
+          path: /var/lib/etcd-backup
+      nodeSelector:
+        role: reserve
