@@ -15,13 +15,36 @@ spec:
         volumeMounts:
         - mountPath: /var/etcd
           name: etcd-volume
+        - mountPath: /backup
+          name: backup-output
         env:
         - name: SLEEP
           value: "30s"
+      - name: etcd-backup-nginx
+        image: nginx
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: backup-output
+        ports:
+        - containerPort: 80
       volumes:
       - name: etcd-volume
         hostPath:
           path: /var/lib/etcd
+      - name: backup-output
+        hostPath:
+          path: /var/lib/etcd-backup
       nodeSelector:
         kubeadm.alpha.kubernetes.io/role: master
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd-backup
+  namespace: kube-system
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+  selector: 
+    app: etcd-backup
