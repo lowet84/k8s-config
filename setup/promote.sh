@@ -4,9 +4,9 @@ if [ "$1" -ne "yes" ]; then
   exit 0
 fi
 
-kubeadm reset
-systemctl start kubelet
-kubeadm init --pod-network-cidr=10.244.0.0/16
+#kubeadm reset
+#systemctl start kubelet
+#kubeadm init --pod-network-cidr=10.244.0.0/16
 systemctl stop kubelet
 rm -r /var/lib/etcd-old
 mv /var/lib/etcd /var/lib/etcd-old
