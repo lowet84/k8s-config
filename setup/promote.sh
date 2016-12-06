@@ -6,7 +6,7 @@ fi
 
 kubeadm reset
 systemctl start kubelet
-kubeadm init --pod-network-cidr=10.244.0.0/16 --token=$TOKEN --api-external-dns-names=$URL
+kubeadm init --pod-network-cidr=10.244.0.0/16
 systemctl stop kubelet
 rm -r /var/lib/etcd-old
 mv /var/lib/etcd /var/lib/etcd-old
