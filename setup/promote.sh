@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ "$1" -ne "yes" ]; then
+if [ "$1" != "yes" ]; then
   echo "Syntax is 'sh promote.sh yes'"
   exit 0
 fi
