@@ -25,4 +25,4 @@ spec:
         hostPath:
           path: /lizardfs-data
       nodeSelector:
-        lizardfs: storage
+        role: storage
