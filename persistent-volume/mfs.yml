@@ -6,7 +6,7 @@ metadata:
     type: local
 spec:
   capacity:
-    storage: 8Gi
+    storage: 2000Gi
   accessModes:
     - ReadWriteMany
   flexVolume:
