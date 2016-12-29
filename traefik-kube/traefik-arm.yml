@@ -22,6 +22,30 @@ spec:
         kubeadm.alpha.kubernetes.io/role: master
         beta.kubernetes.io/arch: amd64
 ---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: traefik-arm
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      containers:
+      - name: traefik
+        image: hypriot/rpi-traefik
+        ports:
+        - containerPort: 80
+        - containerPort: 8080
+        args:
+        - --web
+        - --kubernetes
+      nodeSelector:
+        kubeadm.alpha.kubernetes.io/role: master
+        beta.kubernetes.io/arch: arm
+---
 apiVersion: v1
 kind: Service
 metadata:
