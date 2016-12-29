@@ -1,0 +1,116 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: lizardfs-master
+  namespace: lizardfs
+spec:
+  template:
+    metadata:
+      labels:
+        app: lizardfs-master
+    spec:
+      containers:
+      - name: lizardfs-master
+        image: lowet84/lizardfs-master-arm
+        ports:
+        - containerPort: 9419
+        - containerPort: 9420
+        - containerPort: 9421
+        volumeMounts:
+        - mountPath: /var/lib/lizardfs
+          name: lizardfs-volume
+      volumes:
+      - name: lizardfs-volume
+        hostPath:
+          path: /var/lib/lizardfs
+      nodeSelector:
+        kubeadm.alpha.kubernetes.io/role: master
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: lizardfs-shadow
+  namespace: lizardfs
+spec:
+  template:
+    metadata:
+      labels:
+        app: lizardfs-shadow
+    spec:
+      containers:
+      - name: lizardfs-shadow
+        image: lowet84/lizardfs-shadow-arm
+        ports:
+        - containerPort: 9419
+        - containerPort: 9420
+        - containerPort: 9421
+        volumeMounts:
+        - mountPath: /var/lib/lizardfs
+          name: lizardfs-volume
+      volumes:
+      - name: lizardfs-volume
+        hostPath:
+          path: /var/lib/lizardfs
+      nodeSelector:
+        role: reserve
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lizardfs-master
+  namespace: lizardfs
+spec:
+  type: NodePort
+  ports:
+  - port: 9421
+    nodePort: 30421
+    name: "9421"
+  - port: 9420
+    name: "9420"
+  - port: 9419
+    name: "9419"
+  selector:
+    app: lizardfs-master
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: lizardfs-cgi
+  namespace: lizardfs
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: lizardfs-cgi
+    spec:
+      containers:
+      - name: sonarr
+        image: lowet84/lizardfs-cgi-arm
+        ports:
+        - containerPort: 9425
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lizardfs-cgi
+  namespace: lizardfs
+spec:
+  ports:
+  - port: 9425
+  selector:
+    app: lizardfs-cgi
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: lizardfs-cgi
+  namespace: lizardfs
+spec:
+  rules:
+  - host: lizardfs.pi
+    http:
+      paths:
+      - backend:
+          serviceName: lizardfs-cgi
+          servicePort: 9425
