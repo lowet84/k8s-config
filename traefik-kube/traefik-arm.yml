@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: traefik
-        image: containous/traefik:k8s
+        image: hypriot/rpi-traefik
         ports:
         - containerPort: 80
         - containerPort: 8080
@@ -20,8 +20,7 @@ spec:
         - --kubernetes
       nodeSelector:
         kubeadm.alpha.kubernetes.io/role: master
-        #role: reserve
-        beta.kubernetes.io/arch: amd64
+        beta.kubernetes.io/arch: arm
 ---
 apiVersion: v1
 kind: Service
