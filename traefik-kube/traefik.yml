@@ -20,6 +20,7 @@ spec:
         - --kubernetes
       nodeSelector:
         kubeadm.alpha.kubernetes.io/role: master
+        #role: reserve
         beta.kubernetes.io/arch: amd64
 ---
 apiVersion: extensions/v1beta1
