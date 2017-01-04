@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sonarr
+  namespace: mediaserver
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      containers:
+      - name: sonarr
+        image: lsioarmhf/sonarr
+        ports:
+        - containerPort: 8989
+        volumeMounts:
+        - mountPath: "/config"
+          name: sonarr-volume
+          subPath: sonarr
+        env:
+        - name: PUID
+          value: "0"
+        - name: PGID
+          value: "0"
+      volumes:
+      - name: sonarr-volume
+        persistentVolumeClaim:
+          claimName: mediaserver-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr
+  namespace: mediaserver
+spec:
+  ports:
+  - port: 8989
+  selector:
+    app: sonarr
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sonarr
+  namespace: mediaserver
+spec:
+  rules:
+  - host: sonarr.pi
+    http:
+      paths:
+      - backend:
+          serviceName: sonarr
+          servicePort: 8989
