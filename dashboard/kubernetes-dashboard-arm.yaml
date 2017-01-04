@@ -85,7 +85,7 @@ metadata:
   namespace: kube-system
 spec:
   rules:
-  - host: kubernetes.kube
+  - host: kubernetes.cluster
     http:
       paths:
       - backend:

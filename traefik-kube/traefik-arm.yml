@@ -19,8 +19,9 @@ spec:
         - --web
         - --kubernetes
       nodeSelector:
-        kubeadm.alpha.kubernetes.io/role: master
+        #kubeadm.alpha.kubernetes.io/role: master
         beta.kubernetes.io/arch: arm
+        reserve: "true"
 ---
 apiVersion: v1
 kind: Service
@@ -46,7 +47,7 @@ metadata:
   namespace: kube-system
 spec:
   rules:
-  - host: traefik.kube
+  - host: traefik.cluster
     http:
       paths:
       - backend:
