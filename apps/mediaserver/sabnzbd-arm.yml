@@ -1,58 +1,61 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: sonarr
+  name: sabnzbd
   namespace: mediaserver
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: sonarr
+        app: sabnzbd
     spec:
       containers:
-      - name: sonarr
-        image: lsioarmhf/sonarr
+      - name: sabnzbd
+        image: lsioarmhf/sabnzbd
         ports:
-        - containerPort: 8989
+        - containerPort: 8080
         volumeMounts:
         - mountPath: "/config"
-          name: sonarr-volume
-          subPath: sonarr
+          name: sabnzbd-volume
+          subPath: sabnzbd
         - mountPath: "/downloads"
-          name: sonarr-volume
+          name: sabnzbd-volume
           subPath: data
+        - mountPath: "/incomplete-downloads"
+          name: sabnzbd-volume
+          subPath: incomplete-data
         env:
         - name: PUID
           value: "0"
         - name: PGID
           value: "0"
       volumes:
-      - name: sonarr-volume
+      - name: sabnzbd-volume
         persistentVolumeClaim:
           claimName: mediaserver-claim
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
+  name: sabnzbd
   namespace: mediaserver
 spec:
   ports:
-  - port: 8989
+  - port: 8080
   selector:
-    app: sonarr
+    app: sabnzbd
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: sonarr
+  name: sabnzbd
   namespace: mediaserver
 spec:
   rules:
-  - host: sonarr.cluster
+  - host: sabnzbd.cluster
     http:
       paths:
       - backend:
-          serviceName: sonarr
-          servicePort: 8989
+          serviceName: sabnzbd
+          servicePort: 8080

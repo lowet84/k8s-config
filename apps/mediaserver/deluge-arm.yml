@@ -1,58 +1,61 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: sonarr
+  name: deluge
   namespace: mediaserver
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: sonarr
+        app: deluge
     spec:
       containers:
-      - name: sonarr
-        image: lsioarmhf/sonarr
+      - name: sabnzbd
+        image: lsioarmhf/deluge
         ports:
-        - containerPort: 8989
+        - containerPort: 8112
         volumeMounts:
         - mountPath: "/config"
-          name: sonarr-volume
-          subPath: sonarr
+          name: mfs-volume
+          subPath: deluge
         - mountPath: "/downloads"
-          name: sonarr-volume
+          name: mfs-volume
           subPath: data
+        - mountPath: "/incomplete-downloads"
+          name: mfs-volume
+          subPath: incomplete-data
         env:
         - name: PUID
           value: "0"
         - name: PGID
           value: "0"
       volumes:
-      - name: sonarr-volume
+      - name: mfs-volume
         persistentVolumeClaim:
           claimName: mediaserver-claim
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
+  name: deluge
   namespace: mediaserver
 spec:
   ports:
-  - port: 8989
+  - port: 8112
   selector:
-    app: sonarr
+    app: deluge
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: sonarr
+  name: deluge
   namespace: mediaserver
 spec:
   rules:
-  - host: sonarr.cluster
+  - host: deluge.cluster
     http:
       paths:
       - backend:
-          serviceName: sonarr
-          servicePort: 8989
+          serviceName: deluge
+          servicePort: 8112
