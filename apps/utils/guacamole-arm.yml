@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: guacamole
+  namespace: utils
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: guacamole
+    spec:
+      containers:
+      - name: guacamole
+        image: pshouse/armhf-guacamole
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: "/etc/guacamole"
+          name: utils-volume
+          subPath: guacamole
+      volumes:
+      - name: utils-volume
+        persistentVolumeClaim:
+          claimName: utils-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacamole
+  namespace: utils
+spec:
+  ports:
+  - port: 8080
+  selector:
+    app: guacamole
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: guacamole
+  namespace: utils
+spec:
+  rules:
+  - host: guacamole.cluster
+    http:
+      paths:
+      - backend:
+          serviceName: guacamole
+          servicePort: 8080

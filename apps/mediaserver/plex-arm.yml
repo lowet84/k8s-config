@@ -13,17 +13,27 @@ spec:
       hostNetwork: true
       containers:
       - name: plex
-        image: lsioarmhf/plex
+        image: lsioarmhf/plex:latest
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 32400
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
         ports:
         - containerPort: 32400
         volumeMounts:
         - mountPath: "/config"
           name: mfs-volume
           subPath: plex
-        - mountPath: "/downloads"
+        - mountPath: "/data"
           name: mfs-volume
           subPath: data
         env:
+        - name: VERSION
+          value: "latest"
+        - name: TZ
+          value: "Europe/Stockholm"
         - name: PUID
           value: "0"
         - name: PGID
@@ -32,17 +42,28 @@ spec:
       - name: mfs-volume
         persistentVolumeClaim:
           claimName: mediaserver-claim
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: plex
-  namespace: mediaserver
-spec:
-  type: NodePort
-  ports:
-    - port: 32400
-      nodePort: 32400
-      name: plex
-  selector:
-    app: plex
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: plex
+#  namespace: mediaserver
+#spec:
+#  ports:
+#    - port: 32400
+#  selector:
+#    app: plex
+#---
+#apiVersion: extensions/v1beta1
+#kind: Ingress
+#metadata:
+#  name: plex
+#  namespace: mediaserver
+#spec:
+#  rules:
+#  - host: plex.cluster
+#    http:
+#      paths:
+#      - backend:
+#          serviceName: plex
+#          servicePort: 32400
