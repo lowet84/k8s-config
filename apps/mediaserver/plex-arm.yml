@@ -14,12 +14,12 @@ spec:
       containers:
       - name: plex
         image: lsioarmhf/plex:latest
-#        livenessProbe:
-#          httpGet:
-#            path: /
-            port: 32400
-          initialDelaySeconds: 30
-          timeoutSeconds: 1
+#       livenessProbe:
+#         httpGet:
+#           path: /
+#           port: 32400
+#         initialDelaySeconds: 60
+#         timeoutSeconds: 15
         ports:
         - containerPort: 32400
         volumeMounts:
@@ -32,8 +32,6 @@ spec:
         env:
         - name: VERSION
           value: "latest"
-        - name: TZ
-          value: "Europe/Stockholm"
         - name: PUID
           value: "0"
         - name: PGID
