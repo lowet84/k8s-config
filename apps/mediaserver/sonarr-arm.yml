@@ -40,6 +40,9 @@ metadata:
 spec:
   ports:
   - port: 8989
+    name: web
+    nodePort: 30089
+  type: NodePort
   selector:
     app: sonarr
 ---
