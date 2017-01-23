@@ -1,0 +1,6 @@
+#!/bin/bash
+
+INFO=$(kubectl get pods --all-namespaces | grep $1)
+POD=$(echo $INFO | cut -d' ' -f2)
+NAMESPACE=$(echo $INFO | cut -d' ' -f1)
+echo $NAMESPACE $POD
