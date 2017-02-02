@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: guacamole-mysql
+  namespace: utils
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: guacamole-mysql
+    spec:
+      containers:
+      - name: guacamole-mysql
+        image: lowet84/mysql-guacamole-arm
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: utils-volume
+          subPath: guacamole
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "gurkburk"
+      volumes:
+      - name: utils-volume
+        persistentVolumeClaim:
+          claimName: utils-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacamole-mysql
+  namespace: utils
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    nodePort: 30006
+  selector:
+    app: guacamole-mysql
