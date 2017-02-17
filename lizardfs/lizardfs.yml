@@ -24,7 +24,7 @@ spec:
         hostPath:
           path: /var/lib/lizardfs
       nodeSelector:
-        kubeadm.alpha.kubernetes.io/role: master
+        role.lizardfs-master: "true"
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -52,7 +52,7 @@ spec:
         hostPath:
           path: /var/lib/lizardfs
       nodeSelector:
-        role: reserve
+        role.lizardfs-reserve: "true"
 ---
 apiVersion: v1
 kind: Service
