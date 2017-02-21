@@ -102,16 +102,16 @@ spec:
         - containerPort: 80
           name: "web"
         env:
-        - name: GITLAB_PORT
-          value: "10080"
-        - name: GITLAB_SSH_PORT
-          value: "10022"
         - name: GITLAB_SECRETS_DB_KEY_BASE
           value: "dflijfsdp92j23cl4jli324jcli32jc4ij32"
         - name: GITLAB_SECRETS_SECRET_KEY_BASE
           value: "309c4l830948c209348l02394c098l09284c"
         - name: GITLAB_SECRETS_OTP_KEY_BASE
           value: "z03d8c47b3w98759n798n75987n985985qwe"
+        - name: DB_PASS
+          value: "password"
+        - name: DB_USER
+          value: "gitlab"
         volumeMounts:
         - mountPath: "/home/git/data"
           name: ci-volume
