@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: ci
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: sameersbn/postgresql:9.6-2
+        ports:
+        - containerPort: 5432
+        env:
+        - name: DB_NAME
+          value: "gitlabhq_production"
+        - name: DB_USER
+          value: "gitlab" 
+        - name: DB_PASS
+          value: "password"
+        - name: DB_EXTENSION
+          value: "pg_trgm"
+        volumeMounts:
+        - mountPath: "/var/lib/postgresql"
+          name: ci-volume
+          subPath: gitlab/postgres
+      volumes:
+      - name: ci-volume
+        persistentVolumeClaim:
+          claimName: ci-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: ci
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: postgres
