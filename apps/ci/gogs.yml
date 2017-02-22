@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gogs
+  namespace: ci
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gogs
+    spec:
+      containers:
+      - name: gogs
+        image: gogs/gogs
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - mountPath: "/data"
+          name: ci-volume
+          subPath: gogs
+      volumes:
+      - name: ci-volume
+        persistentVolumeClaim:
+          claimName: ci-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gogs
+  namespace: ci
+spec:
+  ports:
+  - port: 3001
+    targetPort: 3000
+  selector:
+    app: gogs
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gogs
+  namespace: ci
+spec:
+  rules:
+  - host: gogs.kube
+    http:
+      paths:
+      - backend:
+          serviceName: gogs
+          servicePort: 3001

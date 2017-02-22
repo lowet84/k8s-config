@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: drone
+  namespace: ci
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: drone
+    spec:
+      containers:
+      - name: drone
+        image: drone/drone:0.4.2
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - mountPath: "/var/lib/drone/"
+          name: ci-volume
+          subPath: drone
+        env:
+        - name: REMOTE_DRIVER
+          value: "gogs"
+        - name: REMOTE_CONFIG
+          value: "http://gogs:3001?skip_verify=true&open=false"
+#          value: "http://gogs:3000"
+        - name: DRONE_OPEN
+          value: "true"
+        - name: DRONE_GOGS_PRIVATE_MODE
+          value: "false"
+        - name: DRONE_GOGS
+          value: "true"
+        - name: DRONE_GOGS_URL
+          value: "http://gogs:3000"
+        - name: DRONE_SECRET
+          value: "sdfjos923mc840983c0928340c98230942m4c0982"
+      volumes:
+      - name: ci-volume
+        persistentVolumeClaim:
+          claimName: ci-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: drone
+  namespace: ci
+spec:
+  type: NodePort
+  ports:
+  - port: 8000
+    nodePort: 30040
+  selector:
+    app: drone
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: drone
+  namespace: ci
+spec:
+  rules:
+  - host: drone.kube
+    http:
+      paths:
+      - backend:
+          serviceName: drone
+          servicePort: 8000
