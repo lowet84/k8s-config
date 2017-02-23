@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: portus
+  namespace: ci
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: portus
+    spec:
+      containers:
+      - name: portus
+        image: sshipway/portus:latest
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - mountPath: "/certs"
+          name: ci-volume
+          subPath: portus/certs
+        env:
+        - name: PORTUS_MACHINE_FQDN
+          value: "portus.kube"
+        - name: PORTUS_PRODUCTION_HOST
+          value: "portus-mysql"
+        - name: PORTUS_PRODUCTION_DATABASE
+          value: "portus"
+        - name: PORTUS_PRODUCTION_USERNAME
+          value: "portus"
+        - name: PORTUS_PRODUCTION_PASSWORD
+          value: "dbpassword"
+        - name: PORTUS_GRAVATAR_ENABLED
+          value: "true"
+        - name: PORTUS_CHECK_SSL_USAGE_ENABLED
+          value: "false"
+        - name: PORTUS_PASSWORD
+          value: "dbpassword"
+        - name: PORTUS_SECRET_KEY_BASE
+          value: "l3204435ij4v823m94809830984v09849082049m80983209"
+        - name: PORTUS_KEY_PATH
+          value: "/certs"
+      volumes:
+      - name: ci-volume
+        persistentVolumeClaim:
+          claimName: ci-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portus
+  namespace: ci
+spec:
+  ports:
+  - port: 3000
+  selector:
+    app: portus
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: portus
+  namespace: ci
+spec:
+  rules:
+  - host: portus.kube
+    http:
+      paths:
+      - backend:
+          serviceName: portus
+          servicePort: 3000

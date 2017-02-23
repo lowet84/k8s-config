@@ -24,7 +24,6 @@ spec:
           value: "gogs"
         - name: REMOTE_CONFIG
           value: "http://gogs:3001?skip_verify=true&open=false"
-#          value: "http://gogs:3000"
         - name: DRONE_OPEN
           value: "true"
         - name: DRONE_GOGS_PRIVATE_MODE

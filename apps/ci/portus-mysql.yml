@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: portus-mysql
+  namespace: ci
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: portus-mysql
+    spec:
+      containers:
+      - name: portus-mysql
+        image: mariadb
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: ci-volume
+          subPath: portus/db
+        env:
+        - name: MYSQL_DATABASE
+          value: "portus"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "rootpassword"
+        - name: MYSQL_USER
+          value: "portus"
+        - name: MYSQL_PASSWORD
+          value: "dbpassword" 
+      volumes:
+      - name: ci-volume
+        persistentVolumeClaim:
+          claimName: ci-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portus-mysql
+  namespace: ci
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: portus-mysql
