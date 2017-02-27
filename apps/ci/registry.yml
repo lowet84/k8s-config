@@ -1,33 +1,51 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: registry-srv
+  name: registry
   namespace: ci
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: registry-srv
+        app: registry
     spec:
       containers:
-      - name: registry-srv
-        image: registry
+      - name: registry
+        image: registry:2.6.0
         ports:
         - containerPort: 5000
+        env:
+        - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+          value: "/data"
+#        - name: REGISTRY_AUTH
+#          value: "token"
+#        - name: REGISTRY_AUTH_TOKEN_REALM
+#          value: "https://registry.kube:30443/auth"
+#        - name: REGISTRY_AUTH_TOKEN_SERVICE
+#          value: "Docker registry"
+#        - name: REGISTRY_AUTH_TOKEN_ISSUER
+#          value: "Auth Service"
+#        - name: REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE
+#          value: "/ssl/registry.crt"
         volumeMounts:
-        - mountPath: "/var/lib/registry/"
+        - mountPath: "/data"
           name: ci-volume
           subPath: registry
+#        - mountPath: "/ssl"
+#          name: ci-cert
       volumes:
       - name: ci-volume
         persistentVolumeClaim:
           claimName: ci-claim
+#      - name: ci-cert
+#        secret:
+#          secretName: ci-cert
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: registry-srv
+  name: registry
   namespace: ci
 spec:
   type: NodePort
@@ -35,40 +53,18 @@ spec:
   - port: 5000
     nodePort: 30005
   selector:
-    app: registry-srv
+    app: registry
 ---
 apiVersion: extensions/v1beta1
-kind: Deployment
+kind: Ingress
 metadata:
-  name: registry-web
+  name: registry
   namespace: ci
 spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: registry-web
-    spec:
-      containers:
-      - name: registry-web
-        image: hyper/docker-registry-web
-        ports:
-        - containerPort: 8080
-        env:
-        - name: REGISTRY_URL
-          value: "http://registry-srv:5000/v2"
-        - name: REGISTRY_NAME
-          value: "registry-srv:5000"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: registry-web
-  namespace: ci
-spec:
-  type: NodePort
-  ports:
-  - port: 8080
-    nodePort: 30008
-  selector:
-    app: registry-web
+  rules:
+  - host: registry.kube
+    http:
+      paths:
+      - backend:
+          serviceName: registry
+          servicePort: 5000

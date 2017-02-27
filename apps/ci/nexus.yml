@@ -1,0 +1,56 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nexus
+  namespace: ci
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nexus
+    spec:
+      containers:
+      - name: nexus
+        image: sonatype/nexus3
+        ports:
+        - containerPort: 8081
+          name: "web"
+        - containerPort: 5000
+          name: "registry"
+        volumeMounts:
+        - mountPath: "/nexus-data"
+          name: ci-volume
+          subPath: nexus
+      volumes:
+      - name: ci-volume
+        persistentVolumeClaim:
+          claimName: ci-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus
+  namespace: ci
+spec:
+  ports:
+  - port: 8081
+    name: "web"
+  - port: 5000
+    name: "registry"
+  selector:
+    app: nexus
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nexus
+  namespace: ci
+spec:
+  rules:
+  - host: nexus.kube
+    http:
+      paths:
+      - backend:
+          serviceName: nexus
+          servicePort: 8081

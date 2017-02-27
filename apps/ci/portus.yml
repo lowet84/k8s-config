@@ -17,8 +17,7 @@ spec:
         - containerPort: 3000
         volumeMounts:
         - mountPath: "/certs"
-          name: ci-volume
-          subPath: portus/certs
+          name: ci-cert
         env:
         - name: PORTUS_MACHINE_FQDN
           value: "portus.kube"
@@ -39,11 +38,16 @@ spec:
         - name: PORTUS_SECRET_KEY_BASE
           value: "l3204435ij4v823m94809830984v09849082049m80983209"
         - name: PORTUS_KEY_PATH
-          value: "/certs"
+          value: "/certs/registry.key"
+        - name: SSL_CERT_FILE
+          value: "/certs/registry.crt"
       volumes:
       - name: ci-volume
         persistentVolumeClaim:
           claimName: ci-claim
+      - name: ci-cert
+        secret:
+          secretName: ci-cert
 ---
 apiVersion: v1
 kind: Service
