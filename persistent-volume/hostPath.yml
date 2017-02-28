@@ -1,0 +1,53 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mfs-volume
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 2000Gi
+  accessModes:
+    - ReadWriteMany
+  flexVolume:
+    driver: "lowet84/lizardfs"
+    options:
+      host: "localhost"
+      port: "30421" 
+  persistentVolumeReclaimPolicy: Retain
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mfs-volume-1
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 2000Gi
+  accessModes:
+    - ReadWriteMany
+  flexVolume:
+    driver: "lowet84/lizardfs"
+    options:
+      host: "localhost"
+      port: "30421"
+  persistentVolumeReclaimPolicy: Retain
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mfs-volume-2
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 2000Gi
+  accessModes:
+    - ReadWriteMany
+  flexVolume:
+    driver: "lowet84/lizardfs"
+    options:
+      host: "localhost"
+      port: "30421"
+  persistentVolumeReclaimPolicy: Retain
