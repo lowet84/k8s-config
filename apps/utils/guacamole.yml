@@ -1,0 +1,130 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: guacamole
+  namespace: utils
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: guacamole
+    spec:
+      containers:
+      - name: guacamole
+        image: lowet84/guacamole
+        ports:
+        - containerPort: 8080
+        env:
+        - name: GUACD_HOSTNAME
+          value: "guacd"
+        - name: GUACD_PORT
+          value: "4822"
+        - name: MYSQL_DATABASE
+          value: "guacamole_db"
+        - name: MYSQL_HOSTNAME
+          value: "guacamole-mysql"
+        - name: MYSQL_PASSWORD
+          value: "guacamole_password"
+        - name: MYSQL_USER
+          value: "guacamole_user"
+          
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: guacd
+  namespace: utils
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: guacd
+    spec:
+      containers:
+      - name: guacd
+        image: glyptodon/guacd
+        ports:
+        - containerPort: 4822
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: guacamole-mysql
+  namespace: utils
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: guacamole-mysql
+    spec:
+      containers:
+      - name: guacamole-mysql
+        image: mysql
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: utils-volume
+          subPath: guacamole
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "gurkburk"
+      volumes:
+      - name: utils-volume
+        persistentVolumeClaim:
+          claimName: utils-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacamole
+  namespace: utils
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    nodePort: 30808
+  selector:
+    app: guacamole
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacd
+  namespace: utils
+spec:
+  ports:
+  - port: 4822
+  selector:
+    app: guacd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacamole-mysql
+  namespace: utils
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    nodePort: 30006
+  selector:
+    app: guacamole-mysql
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: guacamole
+  namespace: utils
+spec:
+  rules:
+  - host: guacamole.cluster
+    http:
+      paths:
+      - backend:
+          serviceName: guacamole
+          servicePort: 8080
