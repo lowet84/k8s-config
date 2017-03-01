@@ -18,10 +18,9 @@ spec:
         volumeMounts:
         - mountPath: "/config"
           name: sonarr-volume
-          subPath: sonarr
+          subPath: Settings/sonarr
         - mountPath: "/data"
           name: sonarr-volume
-          subPath: data
         env:
         - name: PUID
           value: "0"

@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: plex
+  namespace: mediaserver
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      hostNetwork: true
+      containers:
+      - name: plex
+        image: linuxserver/plex
+        ports:
+        - containerPort: 32400
+        volumeMounts:
+        - mountPath: "/config"
+          name: volume
+          subPath: Settings/plex
+        - mountPath: "/data/TV"
+          name: volume
+          subPath: Rar2fs/TV
+        - mountPath: "/data/TVCharlotte"
+          name: volume
+          subPath: Rar2fs/TVCharlotte
+        - mountPath: "/data/Film"
+          name: volume
+          subPath: Rar2fs/Film
+        env:
+        - name: PUID
+          value: "0"
+        - name: PGID
+          value: "0"
+        - name: TZ
+          value: "SE"
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: mediaserver-claim
