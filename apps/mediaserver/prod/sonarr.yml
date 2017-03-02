@@ -19,8 +19,15 @@ spec:
         - mountPath: "/config"
           name: sonarr-volume
           subPath: Settings/sonarr
-        - mountPath: "/data"
+        - mountPath: "/data/TV"
           name: sonarr-volume
+          subPath: Rar2fs/TV
+        - mountPath: "/data/TVCharlotte"
+          name: sonarr-volume
+          subPath: Rar2fs/TVCharlotte
+        - mountPath: "/data/Downloads"
+          name: sonarr-volume
+          subPath: Rar2fs/Downloads
         env:
         - name: PUID
           value: "0"

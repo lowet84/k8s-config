@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sabnzbd
+  namespace: mediaserver
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sabnzbd
+    spec:
+      containers:
+      - name: sabnzbd
+        image: sabnzbd/sabnzbd
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: "/datadir"
+          name: sabnzbd-volume
+          subPath: Settings/sabnzbd
+        - mountPath: "/data/Downloads"
+          name: sabnzbd-volume
+          subPath: Rar2fs/Downloads
+        env:
+        - name: SABNZBD_UID
+          value: "0"
+        - name: SABNZBD_GID
+          value: "0"
+      volumes:
+      - name: sabnzbd-volume
+        persistentVolumeClaim:
+          claimName: mediaserver-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sabnzbd
+  namespace: mediaserver
+spec:
+  ports:
+  - port: 8080
+  selector:
+    app: sabnzbd
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sabnzbd
+  namespace: mediaserver
+spec:
+  rules:
+  - host: sabnzbd.local
+    http:
+      paths:
+      - backend:
+          serviceName: sabnzbd
+          servicePort: 8080
