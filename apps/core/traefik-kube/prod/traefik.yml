@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      containers:
+      - name: traefik
+        image: traefik
+        ports:
+        - containerPort: 80
+        - containerPort: 8080
+        - containerPort: 443
+#        volumeMounts:
+#        - mountPath: "/ssl"
+#          name: "ssl"
+#        - mountPath: "/config"
+#          name: "config"
+        args:
+        - --web
+        - --kubernetes
+#        - --configfile=/config/traefik.toml
+#        - --logLevel=DEBUG
+      nodeSelector:
+        kubeadm.alpha.kubernetes.io/role: master
+        beta.kubernetes.io/arch: amd64
+#      volumes:
+#      - name: ssl
+#        secret:
+#          secretName: traefik-cert
+#      - name: config
+#        configMap:
+#          name: traefik-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    name: "ui"
+  - port: 80
+    name: "web"
+    nodePort: 30080
+  - port: 443
+    name: "https"
+    nodePort: 30443
+  selector: 
+    app: traefik
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: traefik-web-ui
+  namespace: kube-system
+spec:
+  rules:
+  - host: traefik.local
+    http:
+      paths:
+      - backend:
+          serviceName: traefik
+          servicePort: 8080
