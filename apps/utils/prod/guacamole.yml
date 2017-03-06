@@ -92,7 +92,7 @@ metadata:
   namespace: utils
 spec:
   rules:
-  - host: guacamole.local
+  - host: fredriklowenhamn.ddns.net
     http:
       paths:
       - backend:
@@ -115,11 +115,5 @@ data:
     }
 kind: ConfigMap
 metadata:
-#  creationTimestamp: 2017-03-06T14:40:34Z
   name: guacamole-nginx-config
   namespace: utils
-#  resourceVersion: "474849"
-#  selfLink: /api/v1/namespaces/utils/configmaps/guacamole-nginx
-#  uid: daeb0cd4-027a-11e7-bccd-8c89a5c49d66
----
-
