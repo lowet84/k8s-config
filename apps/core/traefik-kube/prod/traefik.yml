@@ -16,26 +16,27 @@ spec:
         - containerPort: 80
         - containerPort: 8080
         - containerPort: 443
-#        volumeMounts:
-#        - mountPath: "/ssl"
-#          name: "ssl"
-#        - mountPath: "/config"
-#          name: "config"
+        volumeMounts:
+        - mountPath: "/acme"
+          name: "acme"
+          subPath: Settings/traefik
+        - mountPath: "/config"
+          name: "config"
         args:
         - --web
         - --kubernetes
-#        - --configfile=/config/traefik.toml
-#        - --logLevel=DEBUG
+        - --configfile=/config/traefik.toml
+        - --logLevel=DEBUG
       nodeSelector:
         kubeadm.alpha.kubernetes.io/role: master
         beta.kubernetes.io/arch: amd64
-#      volumes:
-#      - name: ssl
-#        secret:
-#          secretName: traefik-cert
-#      - name: config
-#        configMap:
-#          name: traefik-conf
+      volumes:
+      - name: acme
+        persistentVolumeClaim:
+          claimName: system-claim 
+      - name: config
+        configMap:
+          name: traefik-conf
 ---
 apiVersion: v1
 kind: Service

@@ -27,3 +27,18 @@ spec:
   hostPath:
     path: "/mnt/filer"
   persistentVolumeReclaimPolicy: Retain
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: host-volume3
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 2000Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/filer"
+  persistentVolumeReclaimPolicy: Retain
