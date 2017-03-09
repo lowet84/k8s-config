@@ -15,6 +15,7 @@ spec:
         image: linuxserver/deluge
         ports:
         - containerPort: 8112
+        - containerPort: 58846
         volumeMounts:
         - mountPath: "/config"
           name: deluge-volume
@@ -51,6 +52,9 @@ metadata:
 spec:
   ports:
   - port: 8112
+    name: "web"
+  - port: 58846
+    name: "daemon"
   selector:
     app: deluge
 ---

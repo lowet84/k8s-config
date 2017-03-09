@@ -1,0 +1,61 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: couchpotato
+  namespace: mediaserver
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: couchpotato
+    spec:
+      containers:
+      - name: couchpotato
+        image: linuxserver/couchpotato
+        ports:
+        - containerPort: 5050
+        volumeMounts:
+        - mountPath: "/config"
+          name: couchpotato-volume
+          subPath: Settings/couchpotato
+        - mountPath: "/data/Film"
+          name: couchpotato-volume
+          subPath: Rar2fs/Film
+        - mountPath: "/data/Downloads"
+          name: couchpotato-volume
+          subPath: Rar2fs/Downloads
+        env:
+        - name: PGID
+          value: "0"
+        - name: PUID
+          value: "0"
+      volumes:
+      - name: couchpotato-volume
+        persistentVolumeClaim:
+          claimName: mediaserver-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: couchpotato
+  namespace: mediaserver
+spec:
+  ports:
+  - port: 5050
+  selector:
+    app: couchpotato
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: couchpotato
+  namespace: mediaserver
+spec:
+  rules:
+  - host: couchpotato.local
+    http:
+      paths:
+      - backend:
+          serviceName: couchpotato
+          servicePort: 5050
