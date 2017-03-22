@@ -14,6 +14,7 @@ spec:
       containers:
       - name: plex
         image: linuxserver/plex
+        imagePullPolicy: Always
         ports:
         - containerPort: 32400
         volumeMounts:

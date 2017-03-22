@@ -15,15 +15,15 @@ spec:
         args: 
 #        - -u "fredrik;gurkburk" 
         - -s 
-        - "public;/mount"
+        - "public;/data"
         image: dperson/samba
         ports:
-#        - containerPort: 137
-#        - containerPort: 138
+        - containerPort: 137
+        - containerPort: 138
         - containerPort: 139
         - containerPort: 445
         volumeMounts:
-        - mountPath: "/mount"
+        - mountPath: "/data"
           name: utils-volume
       volumes:
       - name: utils-volume
@@ -38,12 +38,12 @@ metadata:
 spec:
   type: NodePort
   ports:
-#  - port: 137
-#    nodePort: 30137
-#    name: "137"
-#  - port: 138
-#    nodePort: 30138
-#    name: "138"
+  - port: 137
+    nodePort: 30137
+    name: "137"
+  - port: 138
+    nodePort: 30138
+    name: "138"
   - port: 139
     nodePort: 30139
     name: "139"

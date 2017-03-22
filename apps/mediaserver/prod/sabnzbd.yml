@@ -21,7 +21,10 @@ spec:
           subPath: Settings/sabnzbd
         - mountPath: "/data/Downloads"
           name: sabnzbd-volume
-          subPath: Rar2fs/Downloads
+          subPath: Downloads
+        - mountPath: "/data/Film"
+          name: sabnzbd-volume
+          subPath: Film
         env:
         - name: SABNZBD_UID
           value: "0"
