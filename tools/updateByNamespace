@@ -4,7 +4,10 @@ NAMESPACES=$(kubectl get namespace | cut -d' ' -f1 | awk 'NR>1')
 NAMESPACE=$(echo $NAMESPACES | grep $1)
 if [ -z $1 ]; then
   echo "Available namespaces:"
-  echo $NAMESPACES
+  for NAMESPACE in $NAMESPACES
+  do  
+    echo $NAMESPACE
+  done
 elif [ ! -n "$NAMESPACE" ]; then
   echo "Namespace does not exist" 
 else
