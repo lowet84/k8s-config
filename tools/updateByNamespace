@@ -1,0 +1,20 @@
+#!/bin/bash
+
+NAMESPACES=$(kubectl get namespace | cut -d' ' -f1 | awk 'NR>1')
+NAMESPACE=$(echo $NAMESPACES | grep $1)
+if [ -z $1 ]; then
+  echo "Available namespaces:"
+  echo $NAMESPACES
+elif [ ! -n "$NAMESPACE" ]; then
+  echo "Namespace does not exist" 
+else
+  DEPLOYMENTS=$(kubectl get deploy --namespace=$1 | cut -d' ' -f1 | awk 'NR>1')
+  for DEPLOYMENT in $DEPLOYMENTS
+  do
+    TARGET="$(kubectl get deploy --namespace=$1 $j | awk 'NR>1' | xargs |  cut -d' ' -f2)"
+    echo $DEPLOYMENT: $TARGET
+    kubectl scale --namespace=$1 --replicas=0 deploy $DEPLOYMENT
+    sleep .5
+    kubectl scale --namespace=$1 --replicas=$TARGET deploy $DEPLOYMENT
+  done
+fi
