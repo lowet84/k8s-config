@@ -13,6 +13,7 @@ spec:
       containers:
       - name: couchpotato
         image: linuxserver/couchpotato
+        imagePullPolicy: Always
         ports:
         - containerPort: 5050
         volumeMounts:

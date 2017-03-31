@@ -13,6 +13,7 @@ spec:
       containers:
       - name: sabnzbd
         image: sabnzbd/sabnzbd
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         volumeMounts:
