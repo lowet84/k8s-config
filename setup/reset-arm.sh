@@ -10,6 +10,7 @@ kubeadm reset
 kubeadm init --token=$TOKEN 
 #--pod-network-cidr 10.244.0.0/16
 
+mkdir -p ~/.kube
 cp /etc/kubernetes/admin.conf ~/.kube/config
 
 #curl -sSL https://rawgit.com/coreos/flannel/v0.7.1/Documentation/kube-flannel.yml | sed "s/amd64/arm/g" | kubectl create -f -
