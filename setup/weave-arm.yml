@@ -12,7 +12,7 @@ spec:
         scheduler.alpha.kubernetes.io/tolerations: |
           [
             {
-              "key": "",
+              "key": "dedicated",
               "operator": "Equal",
               "value": "master",
               "effect": "NoSchedule"

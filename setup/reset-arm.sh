@@ -7,10 +7,12 @@ else
   TOKEN=$FIRST.$SECOND
 fi
 kubeadm reset
-kubeadm init --token=$TOKEN --pod-network-cidr 10.244.0.0/16
+kubeadm init --token=$TOKEN 
+#--pod-network-cidr 10.244.0.0/16
 
 cp /etc/kubernetes/admin.conf ~/.kube/config
 
-kubectl apply -f flannel-arm.yml
+#kubectl apply -f flannel-arm.yml
+kubectl apply -f weave-arm.yml
 echo "writing file join.txt"
 echo "kubeadm join --token=$TOKEN" > /root/join.txt
