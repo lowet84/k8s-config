@@ -15,6 +15,6 @@ cp /etc/kubernetes/admin.conf ~/.kube/config
 
 #curl -sSL https://rawgit.com/coreos/flannel/v0.7.1/Documentation/kube-flannel.yml | sed "s/amd64/arm/g" | kubectl create -f -
 #kubectl apply -f flannel-arm.yml
-kubectl apply -f weave-arm.yml
+kubectl apply -f weave-arm-new.yml
 echo "writing file join.txt"
 echo "kubeadm join --token=$TOKEN" > /root/join.txt
