@@ -7,7 +7,7 @@ else
   TOKEN=$FIRST.$SECOND
 fi
 kubeadm reset
-kubeadm init --token=$TOKEN 
+kubeadm init --token=$TOKEN --use-kubernetes-version="v1.5.2"
 #--pod-network-cidr 10.244.0.0/16
 
 mkdir -p ~/.kube
