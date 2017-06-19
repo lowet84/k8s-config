@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: audiobookserver
+  namespace: utils
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: audiobookserver
+    spec:
+      containers:
+      - name: audiobookserver
+        image: lowet84/audiobookserver
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: "/out/Data"
+          name: volume
+          subPath: Settings/audiobookserver
+        - mountPath: "/data/"
+          name: volume
+          subPath: Audiobooks
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: utils-claim
