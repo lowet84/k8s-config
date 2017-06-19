@@ -27,3 +27,28 @@ spec:
       - name: volume
         persistentVolumeClaim:
           claimName: utils-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audiobookserver
+  namespace: utils
+spec:
+  ports:
+  - port: 5000
+  selector:
+    app: audiobookserver
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: audiobookserver
+  namespace: utils
+spec:
+  rules:
+  - host: audiobookserver.local
+    http:
+      paths:
+      - backend:
+          serviceName: audiobookserver
+          servicePort: 5000
