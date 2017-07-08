@@ -1,0 +1,74 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: traefik-public
+  namespace: kube-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: traefik-public
+    spec:
+      containers:
+      - name: traefik-public
+        image: traefik
+        ports:
+        - containerPort: 80
+        - containerPort: 8080
+        - containerPort: 443
+        volumeMounts:
+        - mountPath: "/acme"
+          name: "acme"
+          subPath: Settings/traefik
+        - mountPath: "/config"
+          name: "config"
+        args:
+        - --web
+        - --kubernetes
+        - --configfile=/config/traefik.toml
+        - --logLevel=DEBUG
+        - --kubernetes.labelselector=public=true
+      nodeSelector:
+        kubeadm.alpha.kubernetes.io/role: master
+        beta.kubernetes.io/arch: amd64
+      volumes:
+      - name: acme
+        persistentVolumeClaim:
+          claimName: system-claim 
+      - name: config
+        configMap:
+          name: traefik-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-public
+  namespace: kube-system
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    name: "ui"
+  - port: 80
+    name: "web"
+    nodePort: 31080
+  - port: 443
+    name: "https"
+    nodePort: 31443
+  selector: 
+    app: traefik-public
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: traefik-public-web-ui
+  namespace: kube-system
+spec:
+  rules:
+  - host: traefik-public.local
+    http:
+      paths:
+      - backend:
+          serviceName: traefik-public
+          servicePort: 8080
