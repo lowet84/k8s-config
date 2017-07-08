@@ -30,6 +30,9 @@ spec:
         - mountPath: "/data/Film"
           name: volume
           subPath: Rar2fs/Film
+        - mountPath: "/data/Anime"
+          name: volume
+          subPath: Anime
         env:
         - name: PUID
           value: "0"

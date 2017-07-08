@@ -29,6 +29,9 @@ spec:
         - mountPath: "/data/Downloads"
           name: sonarr-volume
           subPath: Rar2fs/Downloads
+        - mountPath: "/data/Anime"
+          name: sonarr-volume
+          subPath: Anime
         env:
         - name: PUID
           value: "0"
