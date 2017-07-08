@@ -28,6 +28,7 @@ spec:
         - --kubernetes
         - --configfile=/config/traefik.toml
         - --logLevel=DEBUG
+#        - --kubernetes.labelselector=public=true
       nodeSelector:
         kubeadm.alpha.kubernetes.io/role: master
         beta.kubernetes.io/arch: amd64

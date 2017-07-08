@@ -1,21 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: audiobookserver
+  name: audiobookserver-web
   namespace: utils
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: audiobookserver
+        app: audiobookserver-web
     spec:
       containers:
-      - name: audiobookserver
-        image: lowet84/audiobookserver
+      - name: audiobookserver-web
+        image: lowet84/audiobookserver-web
         imagePullPolicy: Always
         ports:
-        - containerPort: 5000
+        - containerPort: 5001
         volumeMounts:
         - mountPath: "/out/Data"
           name: volume
@@ -23,6 +23,38 @@ spec:
         - mountPath: "/data/"
           name: volume
           subPath: Audiobooks
+        env:
+        - name: DATABASE
+          value: "audiobookserver-rethinkdb"
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: utils-claim
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: audiobookserver-rethinkdb
+  namespace: utils
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: audiobookserver-rethinkdb
+    spec:
+      containers:
+      - name: audiobookserver-rethinkdb
+        image: rethinkdb
+        imagePullPolicy: Always
+        ports:
+#        - containerPort: 8080
+        - containerPort: 28015
+#        - containerPort: 29015
+        volumeMounts:
+        - mountPath: "/data"
+          name: volume
+          subPath: Settings/audiobookserver
       volumes:
       - name: volume
         persistentVolumeClaim:
@@ -31,24 +63,37 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: audiobookserver
+  name: audiobookserver-web
   namespace: utils
 spec:
   ports:
-  - port: 5000
+  - port: 5001
   selector:
-    app: audiobookserver
+    app: audiobookserver-web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audiobookserver-rethinkdb
+  namespace: utils
+spec:
+  ports:
+  - port: 28015
+  selector:
+    app: audiobookserver-rethinkdb
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: audiobookserver
+  name: audiobookserver-web
   namespace: utils
+  labels:
+    public: "true"
 spec:
   rules:
   - host: audiobookserver.local
     http:
       paths:
       - backend:
-          serviceName: audiobookserver
-          servicePort: 5000
+          serviceName: audiobookserver-web
+          servicePort: 5001
