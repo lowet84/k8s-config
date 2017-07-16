@@ -34,6 +34,39 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
+  name: audiobookserver-api
+  namespace: utils
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: audiobookserver-api
+    spec:
+      containers:
+      - name: audiobookserver-api
+        image: lowet84/audiobookserver-api
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: "/out/Data"
+          name: volume
+          subPath: Settings/audiobookserver
+        - mountPath: "/data/"
+          name: volume
+          subPath: Audiobooks
+        env:
+        - name: DATABASE
+          value: "audiobookserver-rethinkdb"
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: utils-claim
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
   name: audiobookserver-rethinkdb
   namespace: utils
 spec:
@@ -74,6 +107,17 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: audiobookserver-api
+  namespace: utils
+spec:
+  ports:
+  - port: 5000
+  selector:
+    app: audiobookserver-api
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: audiobookserver-rethinkdb
   namespace: utils
 spec:
@@ -97,3 +141,19 @@ spec:
       - backend:
           serviceName: audiobookserver-web
           servicePort: 5001
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: audiobookserver-public
+  namespace: utils
+  labels:
+    public: "true"
+spec:
+  rules:
+  - host: audiobookserver.fredriklowenhamn.se
+    http:
+      paths:
+      - backend:
+          serviceName: audiobookserver-api
+          servicePort: 5000

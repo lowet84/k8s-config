@@ -12,30 +12,30 @@ spec:
     spec:
       containers:
       - name: traefik
-        image: traefik
+        image: traefik:1.1
         ports:
         - containerPort: 80
         - containerPort: 8080
-        - containerPort: 443
+#        - containerPort: 443
         volumeMounts:
-        - mountPath: "/acme"
-          name: "acme"
-          subPath: Settings/traefik
+#        - mountPath: "/acme"
+#          name: "acme"
+#          subPath: Settings/traefik
         - mountPath: "/config"
           name: "config"
         args:
         - --web
         - --kubernetes
-        - --configfile=/config/traefik.toml
+#        - --configfile=/config/traefik.toml
         - --logLevel=DEBUG
 #        - --kubernetes.labelselector=public=true
       nodeSelector:
         kubeadm.alpha.kubernetes.io/role: master
         beta.kubernetes.io/arch: amd64
       volumes:
-      - name: acme
-        persistentVolumeClaim:
-          claimName: system-claim 
+#      - name: acme
+#        persistentVolumeClaim:
+#          claimName: system-claim 
       - name: config
         configMap:
           name: traefik-conf
@@ -53,9 +53,9 @@ spec:
   - port: 80
     name: "web"
     nodePort: 30080
-  - port: 443
-    name: "https"
-    nodePort: 30443
+#  - port: 443
+#    name: "https"
+#    nodePort: 30443
   selector: 
     app: traefik
 ---
